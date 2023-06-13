@@ -3,7 +3,6 @@ const sinon = require("sinon");
 const bcrypt = require("bcrypt");
 const User = require("../models/userModel"); // Assuming you have a User model defined
 const { register } = require("../controllers/adminController");
-const { isAdmin } = require("../middlewares/Auth");
 
 describe("Admin Controller - Register", () => {
   let req;
