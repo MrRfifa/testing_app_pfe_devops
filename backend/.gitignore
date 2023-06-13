@@ -1,0 +1,11 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+/node_modules
+jmeter.log
+/test/reports
+/test/tests
+.env
+/uploads/difference
+/uploads/diff-plus
+/uploads/diff-minus
