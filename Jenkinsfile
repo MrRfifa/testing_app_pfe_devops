@@ -46,14 +46,14 @@ pipeline {
         }
   }
 }
-    stage('Frontend dep install') {
-      steps {
-        dir("frontend") {
-          sh 'npm i'
-          sh 'npm audit fix --force'
-        }
-      }
-    }
+    // stage('Frontend dep install') {
+    //   steps {
+    //     dir("frontend") {
+    //       sh 'npm audit fix --force'
+    //       sh 'npm i'
+    //     }
+    //   }
+    // }
     stage('Build frontend') {
       steps {
         dir("frontend") {
