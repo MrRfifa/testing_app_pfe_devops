@@ -49,7 +49,7 @@ pipeline {
     stage('Frontend dep install') {
       steps {
         dir("frontend") {
-          sh 'npm isntall-clean'
+          sh 'npm install'
         }
       }
     }
