@@ -49,10 +49,11 @@ pipeline {
     stage('Frontend dep install') {
       steps {
         dir("frontend") {
-          sh 'npm ci'
+          sh 'npm isntall-clean'
         }
       }
     }
+
     stage('Build frontend') {
       steps {
         dir("frontend") {
