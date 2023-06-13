@@ -11,44 +11,38 @@ pipeline {
         checkout scm
       }
     }
-            stage('Backend install dependencies') {
-  steps {
-    dir("backend") {
+    stage('Backend tests') {
+      steps {
+        dir('backend') {
           sh 'npm install'
-        }
-  }
-}
-    stage('Test backend') {
-  steps {
-    dir("backend") {
           sh 'npm test'
         }
-  }
-}
- stage('Build backend image') {
-  steps {
-    dir("backend") {
+      }
+    }
+    stage('Build backend image') {
+      steps {
+        dir('backend') {
           sh 'docker build -t mrrfifa/backend-image .'
         }
-  }
-}
- stage('Build frontend image') {
-  steps {
-            dir("frontend") {
+      }
+    }
+    stage('Build frontend image') {
+      steps {
+            dir('frontend') {
           sh 'docker build -t mrrfifa/frontend-image .'
-        }
-  }
-}
+            }
+      }
+    }
     stage('Build ml image') {
       steps {
-        dir("ml") {
+        dir('ml') {
           sh 'docker build -t mrrfifa/ml-image .'
         }
       }
     }
-    stage('build proxy image'){
-      steps{
-               dir("nginx") {
+    stage('build proxy image') {
+      steps {
+        dir('nginx') {
           sh 'docker build -t mrrfifa/proxy-image .'
         }
       }
