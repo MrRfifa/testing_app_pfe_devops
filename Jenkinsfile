@@ -1,10 +1,9 @@
 pipeline {
   agent any
-    tools {
-        // Specify the Docker and Node.js installations configured in step 3 and step 6
-        dockerTool 'docker'
-        nodejs 'node js'
-    }
+  tools {
+    dockerTool 'docker'
+    nodejs 'node js'
+  }
   stages {
     stage('Checkout') {
       steps {
@@ -28,9 +27,9 @@ pipeline {
     }
     stage('Build frontend image') {
       steps {
-            dir('frontend') {
+        dir('frontend') {
           sh 'docker build -t mrrfifa/frontend-image .'
-            }
+        }
       }
     }
     stage('Build ml image') {
