@@ -6,58 +6,50 @@ pipeline {
         nodejs 'node js'
     }
   stages {
-    stage('Example') {
-      steps {
-        echo 'Hello World'
-      }
-    }
     stage('Checkout') {
       steps {
         checkout scm
       }
     }
-    // stage('Build Images') {
-    //   steps {
-    //     dir("backend") {
-    //       sh 'docker build -t mrrfifa/backend-image .'
-    //     }
-    //     dir("frontend") {
-    //       sh 'docker build -t mrrfifa/frontend-image .'
-    //     }
-    //     dir("nginx") {
-    //       sh 'docker build -t mrrfifa/proxy-image .'
-    //     }
-    //     dir("ml") {
-    //       sh 'docker build -t mrrfifa/ml-image .'
-    //     }
-    //   }
-    // }
-        stage('Backend install dependencies') {
+            stage('Backend install dependencies') {
   steps {
     dir("backend") {
           sh 'npm install'
         }
   }
 }
-    stage('Test Registration back') {
+    stage('Test backend') {
   steps {
     dir("backend") {
           sh 'npm test'
         }
   }
 }
-    stage('Frontend dep install') {
+ stage('Build backend image') {
+  steps {
+    dir("backend") {
+          sh 'docker build -t mrrfifa/backend-image .'
+        }
+  }
+}
+ stage('Build frontend image') {
+  steps {
+            dir("frontend") {
+          sh 'docker build -t mrrfifa/frontend-image .'
+        }
+  }
+}
+    stage('Build ml image') {
       steps {
-        dir("frontend") {
-          sh 'npm install'
+        dir("ml") {
+          sh 'docker build -t mrrfifa/ml-image .'
         }
       }
     }
-
-    stage('Build frontend') {
-      steps {
-        dir("frontend") {
-          sh 'npm run build'
+    stage('build proxy image'){
+      steps{
+               dir("nginx") {
+          sh 'docker build -t mrrfifa/proxy-image .'
         }
       }
     }
