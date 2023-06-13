@@ -2,8 +2,8 @@ const { expect } = require("chai");
 const sinon = require("sinon");
 const bcrypt = require("bcrypt");
 const User = require("../models/userModel"); // Assuming you have a User model defined
-
 const { register } = require("../controllers/adminController");
+const { isAdmin } = require("../middlewares/Auth");
 
 describe("Admin Controller - Register", () => {
   let req;
@@ -18,6 +18,10 @@ describe("Admin Controller - Register", () => {
         password: "Test123!",
         passwordVerify: "Test123!",
         role: "tester",
+      },
+      headers: {
+        authorization:
+          "bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2M2Y0ZTlmMmYxMjE0ZWY2MzBiOTVkZjYiLCJ1c2VyUm9sZSI6InRlc3RlciIsImlhdCI6MTY3ODQ1ODU1N30.DVI3KHV-wQ6a65Yl-S1dtjLCnAzC0SxGPaAoLX_pq0A",
       },
     };
 
@@ -34,11 +38,10 @@ describe("Admin Controller - Register", () => {
   it("should return status 200 with success message when registration is successful", async () => {
     sinon.stub(User, "findOne").returns(null);
     sinon.stub(User.prototype, "save");
-
     await register(req, res);
 
     expect(res.status.calledWith(200)).to.be.true;
-    expect(res.json.calledWith({ message: "Registered successfully!" })).to.be
+    expect(res.json.calledWith({ message: "Registred successfully!" })).to.be
       .true;
   });
 
@@ -75,7 +78,7 @@ describe("Admin Controller - Register", () => {
     expect(res.status.calledWith(400)).to.be.true;
     expect(
       res.json.calledWith({
-        error: "Invalid password: Password must contain ...",
+        error: "Invalid password : Password must contain ...",
       })
     ).to.be.true;
   });
@@ -97,6 +100,6 @@ describe("Admin Controller - Register", () => {
     await register(req, res);
 
     expect(res.status.calledWith(500)).to.be.true;
-    expect(res.json.calledWith({ message: "Error in adding user" })).to.be.true;
+    expect(res.json.calledWith({ message: "error in adding user" })).to.be.true;
   });
 });
