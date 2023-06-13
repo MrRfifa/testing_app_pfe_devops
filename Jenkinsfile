@@ -12,18 +12,27 @@ pipeline {
         checkout scm
       }
     }
-    //         stage('Build Images') {
-    // 	steps {
-    // 		sh 'docker build -t mrrfifa/backend-image ./backend'
-    // 		sh 'docker build -t mrrfifa/frontend-image ./frontend'
-    //         sh 'docker build -t mrrfifa/proxy-image ./nginx'
-    //         sh 'docker build -t mrrfifa/ml-image ./ml'
-    // 	}
-    // }
+    stage('Build Images') {
+      steps {
+        dir("backend") {
+          sh 'docker build -t mrrfifa/backend-image .'
+        }
+        dir("frontend") {
+          sh 'docker build -t mrrfifa/frontend-image .'
+        }
+        dir("nginx") {
+          sh 'docker build -t mrrfifa/proxy-image .'
+        }
+        dir("ml") {
+          sh 'docker build -t mrrfifa/ml-image .'
+        }
+      }
+    }
     stage('Build frontend') {
       steps {
-        dir("frontend")
-        sh 'nom run build'
+        dir("frontend") {
+          sh 'npm run build'
+        }
       }
     }
   }
