@@ -32,13 +32,24 @@ pipeline {
     //     }
     //   }
     // }
-        stage('Backend install dependencies') {
-  steps {
-    dir("backend") {
+    
+  parallel {
+    stage('Backend install dependencies') {
+      steps {
+        dir("backend") {
           sh 'npm install'
         }
+      }
+    }
+
+    stage('Frontend dep install') {
+      steps {
+        dir("frontend") {
+          sh 'npm ci'
+        }
+      }
+    }
   }
-}
     stage('Test Registration back') {
   steps {
     dir("backend") {
@@ -46,13 +57,6 @@ pipeline {
         }
   }
 }
-    stage('Frontend dep install') {
-      steps {
-        dir("frontend") {
-          sh 'npm i'
-        }
-      }
-    }
     stage('Build frontend') {
       steps {
         dir("frontend") {
