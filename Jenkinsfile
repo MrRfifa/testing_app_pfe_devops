@@ -49,7 +49,6 @@ pipeline {
     stage('Frontend dep install') {
       steps {
         dir("frontend") {
-          sh 'npm audit fix --force'
           sh 'npm i'
         }
       }
