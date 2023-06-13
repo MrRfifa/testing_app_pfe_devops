@@ -1,6 +1,10 @@
 pipeline {
   agent any
-
+    tools {
+        // Specify the Docker and Node.js installations configured in step 3 and step 6
+        docker 'Docker'
+        nodejs 'Node.js 18.15.0'
+    }
   stages {
     stage('Example') {
       steps {
