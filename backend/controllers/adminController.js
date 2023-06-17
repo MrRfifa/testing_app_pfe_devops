@@ -1,7 +1,7 @@
 const bcrypt = require("bcrypt");
 const User = require("../models/userModel");
 const Test = require("../models/testModel");
-const fs = require("fs");
+const request = require("request");
 
 //function : adding user
 const register = async (req, res) => {
@@ -119,8 +119,38 @@ const getTestStatePerUserId = async (req, res) => {
   } catch (error) {}
 };
 
+const updateDataset = async (req, res) => {
+  const options = {
+    url: "http://127.0.0.1:5001/rapports/csv",
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  };
+
+  try {
+    const response = await new Promise((resolve, reject) => {
+      request(options, (error, response) => {
+        if (error) {
+          reject(error);
+        } else {
+          resolve(response);
+        }
+      });
+    });
+
+    res.status(200).send({ message: "Dataset updated successfully" });
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .send({ message: "An error occurred while updating the dataset" });
+  }
+};
+
 //exports
 exports.register = register;
 exports.getAllUsers = getAllUsers;
 exports.deleteUser = deleteUser;
 exports.getTestStatePerUserId = getTestStatePerUserId;
+exports.updateDataset = updateDataset;
