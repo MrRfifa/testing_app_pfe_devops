@@ -5,6 +5,11 @@ pipeline {
     nodejs 'node js'
   }
   stages {
+    stage('Checkout') {
+      steps {
+        checkout scm
+      }
+    }
     stage('Backend tests') {
       steps {
         dir('backend') {
