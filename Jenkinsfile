@@ -40,12 +40,20 @@ pipeline {
       }
     }
     stage('Build frontend image') {
-  steps {
-      dir('frontend') {
-        sh 'docker build -t mrrfifa/frontend-image .'
+      steps {
+        dir('frontend') {
+          sh 'docker build -t mrrfifa/frontend-image .'
+        }
       }
-  }
-}
-
+    }
+    stage('Push images to Docker Hub') {
+      steps {
+        sh 'docker login -u your_dockerhub_username -p your_dockerhub_password'
+        sh 'docker push mrrfifa/backend-image'
+        sh 'docker push mrrfifa/ml-image'
+        sh 'docker push mrrfifa/proxy-image'
+        sh 'docker push mrrfifa/frontend-image'
+      }
+    }
   }
 }
