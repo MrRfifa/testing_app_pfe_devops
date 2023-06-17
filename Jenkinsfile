@@ -41,11 +41,9 @@ pipeline {
     }
     stage('Build frontend image') {
   steps {
-    timeout(time: 3, unit: 'MINUTES') {
       dir('frontend') {
         sh 'docker build -t mrrfifa/frontend-image .'
       }
-    }
   }
 }
 
