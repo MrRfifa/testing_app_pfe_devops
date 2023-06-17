@@ -48,7 +48,7 @@ pipeline {
     }
     stage('Push images to Docker Hub') {
       steps {
-        sh 'docker login -u your_dockerhub_username -p your_dockerhub_password'
+        sh 'docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD'
         sh 'docker push mrrfifa/backend-image'
         sh 'docker push mrrfifa/ml-image'
         sh 'docker push mrrfifa/proxy-image'
