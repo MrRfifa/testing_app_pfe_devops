@@ -53,60 +53,66 @@ pipeline {
       }
     }
 
-    stage('SonarQube analysis - Backend') {
-      steps {
-        dir('backend') {
-          script {
-            def scannerHome = tool 'sonar'
-            withSonarQubeEnv('sonar') {
-              sh """${scannerHome}/bin/sonar-scanner \
-                  -Dsonar.projectKey=PFE-BACKEND-NODE \
-                  -Dsonar.sources=. \
-                  -Dsonar.exclusions=**/node_modules/**,**/clones/**,**/test/**,**/uploads/**,*.json,*.log,.*,Dockerfile \
-                  -Dsonar.host.url=http://20.39.234.86:9000 \
-                  -Dsonar.login=${SONAR_TOKEN_BACK}"""
+    stage('SonarQube analysis') {
+      parallel {
+        stage('SonarQube analysis - Backend') {
+          steps {
+            dir('backend') {
+              script {
+                def scannerHome = tool 'sonar'
+                withSonarQubeEnv('sonar') {
+                  sh """${scannerHome}/bin/sonar-scanner \
+                      -Dsonar.projectKey=PFE-BACKEND-NODE \
+                      -Dsonar.sources=. \
+                      -Dsonar.exclusions=**/node_modules/**,**/clones/**,**/test/**,**/uploads/**,*.json,*.log,.*,Dockerfile \
+                      -Dsonar.host.url=http://20.39.234.86:9000 \
+                      -Dsonar.login=${SONAR_TOKEN_BACK}"""
+                }
+              }
             }
           }
         }
-      }
-    }
 
-    stage('SonarQube analysis - ML') {
-      steps {
-        dir('ml') {
-          script {
-            def scannerHome = tool 'sonar'
-            withSonarQubeEnv('sonar') {
-              sh """${scannerHome}/bin/sonar-scanner \
-                  -Dsonar.projectKey=PFE-ML-PYTHON \
-                  -Dsonar.sources=./*.py \
-                  -Dsonar.host.url=http://20.39.234.86:9000 \
-                  -Dsonar.login=${SONAR_TOKEN_ML}"""
+        stage('SonarQube analysis - ML') {
+          steps {
+            dir('ml') {
+              script {
+                def scannerHome = tool 'sonar'
+                withSonarQubeEnv('sonar') {
+                  sh """${scannerHome}/bin/sonar-scanner \
+                      -Dsonar.projectKey=PFE-ML-PYTHON \
+                      -Dsonar.sources=./*.py \
+                      -Dsonar.host.url=http://20.39.234.86:9000 \
+                      -Dsonar.login=${SONAR_TOKEN_ML}"""
+                }
+              }
             }
           }
         }
-      }
-    }
 
-    stage('SonarQube analysis - Frontend') {
-      steps {
-        dir('frontend') {
-          script {
-            def scannerHome = tool 'sonar'
-            withSonarQubeEnv('sonar') {
-              sh "${scannerHome}/bin/sonar-scanner \
-                  -Dsonar.projectKey=PFE-FRONTEND-REACT \
-                  -Dsonar.sources=src/**/*.js,src/**/*.jsx \
-                  -Dsonar.host.url=http://20.39.234.86:9000 \
-                  -Dsonar.login=${SONAR_TOKEN_FRONT}"
+        stage('SonarQube analysis - Frontend') {
+          steps {
+            dir('frontend') {
+              script {
+                def scannerHome = tool 'sonar'
+                withSonarQubeEnv('sonar') {
+                  sh "${scannerHome}/bin/sonar-scanner \
+                      -Dsonar.projectKey=PFE-FRONTEND-REACT \
+                      -Dsonar.sources=src/**/*.js,src/**/*.jsx \
+                      -Dsonar.host.url=http://20.39.234.86:9000 \
+                      -Dsonar.login=${SONAR_TOKEN_FRONT}"
+                }
+              }
             }
           }
         }
       }
     }
+  }
+}
+
     //SONAR_TOKEN_FRONT
     //SONAR_TOKEN_BACK
-
 
 
     // stage('Push images to Docker Hub') {
@@ -118,5 +124,3 @@ pipeline {
     //     sh 'docker push mrrfifa/frontend-image'
     //   }
     // }
-  }
-}
