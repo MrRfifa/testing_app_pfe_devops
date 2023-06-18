@@ -96,7 +96,8 @@ pipeline {
             withSonarQubeEnv('sonar') {
               sh "${scannerHome}/bin/sonar-scanner \
                   -Dsonar.projectKey=PFE-FRONTEND-REACT \
-                  -Dsonar.sources=src/**/*.js,src/**/*.jsx \
+                  -Dsonar.sources=./src \
+                  -Dsonar.exclusions=**/node_modules/**,**/assets/**,*.json,*.md,.*,Dockerfile,*.css,*.conf \
                   -Dsonar.host.url=http://20.39.234.86:9000 \
                   -Dsonar.login=${SONAR_TOKEN_FRONT}"
             }
