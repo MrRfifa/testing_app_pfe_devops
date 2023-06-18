@@ -79,7 +79,7 @@ pipeline {
             withSonarQubeEnv('sonar') {
               sh """${scannerHome}/bin/sonar-scanner \
                   -Dsonar.projectKey=PFE-ML-PYTHON \
-                  -Dsonar.sources=./*.py \
+                  -Dsonar.sources=app.py,functions.py \
                   -Dsonar.host.url=http://20.39.234.86:9000 \
                   -Dsonar.login=${SONAR_TOKEN_ML}"""
             }
