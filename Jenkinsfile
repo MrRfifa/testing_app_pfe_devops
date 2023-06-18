@@ -12,110 +12,135 @@ pipeline {
       }
     }
 
+    stage('Analyses SonarQube') {
+      parallel {
+        stage('SonarQube analysis - Backend') {
+          steps {
+            dir('backend') {
+              script {
+                def scannerHome = tool 'sonar'
+                withSonarQubeEnv('sonar') {
+                  sh ""
+                  "${scannerHome}/bin/sonar-scanner \
+                    -Dsonar.projectKey=PFE-BACKEND-NODE \
+                    -Dsonar.sources=. \
+                    -Dsonar.exclusions=**/node_modules/**,**/clones/**,**/test/**,**/uploads/**,*.json,*.log,.*,Dockerfile \
+                    -Dsonar.host.url=http://20.39.234.86:9000 \
+                    -Dsonar.login=${SONAR_TOKEN_BACK}"
+                  ""
+                }
+              }
+            }
+          }
+        }
 
+        stage('SonarQube analysis - ML') {
+          steps {
+            dir('ml') {
+              script {
+                def scannerHome = tool 'sonar'
+                withSonarQubeEnv('sonar') {
+                  sh ""
+                  "${scannerHome}/bin/sonar-scanner \
+                    -Dsonar.projectKey=PFE-ML-PYTHON \
+                    -Dsonar.sources=app.py,functions.py \
+                    -Dsonar.host.url=http://20.39.234.86:9000 \
+                    -Dsonar.login=${SONAR_TOKEN_ML}"
+                  ""
+                }
+              }
+            }
+          }
+        }
 
-    stage('SonarQube analysis - Backend') {
-      steps {
-        dir('backend') {
-          script {
-            def scannerHome = tool 'sonar'
-            withSonarQubeEnv('sonar') {
-              sh """${scannerHome}/bin/sonar-scanner \
-                  -Dsonar.projectKey=PFE-BACKEND-NODE \
-                  -Dsonar.sources=. \
-                  -Dsonar.exclusions=**/node_modules/**,**/clones/**,**/test/**,**/uploads/**,*.json,*.log,.*,Dockerfile \
-                  -Dsonar.host.url=http://20.39.234.86:9000 \
-                  -Dsonar.login=${SONAR_TOKEN_BACK}"""
+        stage('SonarQube analysis - Frontend') {
+          steps {
+            dir('frontend') {
+              script {
+                def scannerHome = tool 'sonar'
+                withSonarQubeEnv('sonar') {
+                  sh "${scannerHome}/bin/sonar-scanner \
+                    -Dsonar.projectKey=PFE-FRONTEND-REACT \
+                    -Dsonar.sources=./src \
+                    -Dsonar.exclusions=**/node_modules/**,**/assets/**,*.json,*.md,.*,Dockerfile,*.css,*.conf \
+                    -Dsonar.host.url=http://20.39.234.86:9000 \
+                    -Dsonar.login=${SONAR_TOKEN_FRONT}"
+                }
+              }
             }
           }
         }
       }
     }
 
-    stage('SonarQube analysis - ML') {
-      steps {
-        dir('ml') {
-          script {
-            def scannerHome = tool 'sonar'
-            withSonarQubeEnv('sonar') {
-              sh """${scannerHome}/bin/sonar-scanner \
-                  -Dsonar.projectKey=PFE-ML-PYTHON \
-                  -Dsonar.sources=app.py,functions.py \
-                  -Dsonar.host.url=http://20.39.234.86:9000 \
-                  -Dsonar.login=${SONAR_TOKEN_ML}"""
+    stage('Construction des images') {
+      parallel {
+        stage('Backend tests') {
+          steps {
+            dir('backend') {
+              sh 'npm install'
+              sh 'npm test'
+            }
+          }
+        }
+
+        stage('Build backend image') {
+          steps {
+            dir('backend') {
+              sh 'docker build -t mrrfifa/backend-image .'
+            }
+          }
+        }
+
+        stage('build proxy image') {
+          steps {
+            dir('nginx') {
+              sh 'docker build -t mrrfifa/proxy-image .'
+            }
+          }
+        }
+
+        stage('Build ml image') {
+          steps {
+            dir('ml') {
+              sh 'docker build -t mrrfifa/ml-image .'
+            }
+          }
+        }
+
+        stage('Build frontend image') {
+          steps {
+            dir('frontend') {
+              sh 'docker build -t mrrfifa/frontend-image .'
             }
           }
         }
       }
     }
 
-    stage('SonarQube analysis - Frontend') {
+    stage('Push Backend image to Docker Hub') {
       steps {
-        dir('frontend') {
-          script {
-            def scannerHome = tool 'sonar'
-            withSonarQubeEnv('sonar') {
-              sh "${scannerHome}/bin/sonar-scanner \
-                  -Dsonar.projectKey=PFE-FRONTEND-REACT \
-                  -Dsonar.sources=./src \
-                  -Dsonar.exclusions=**/node_modules/**,**/assets/**,*.json,*.md,.*,Dockerfile,*.css,*.conf \
-                  -Dsonar.host.url=http://20.39.234.86:9000 \
-                  -Dsonar.login=${SONAR_TOKEN_FRONT}"
-            }
-          }
-        }
+        sh 'docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD'
+        sh 'docker push mrrfifa/backend-image'
       }
     }
-
-    stage('Backend tests') {
+    stage('Push Frontend image to Docker Hub') {
       steps {
-        dir('backend') {
-          sh 'npm install'
-          sh 'npm test'
-        }
+        sh 'docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD'
+        sh 'docker push mrrfifa/frontend-image'
       }
     }
-
-    stage('Build backend image') {
+    stage('Push ML image to Docker Hub') {
       steps {
-        dir('backend') {
-          sh 'docker build -t mrrfifa/backend-image .'
-        }
+        sh 'docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD'
+        sh 'docker push mrrfifa/ml-image'
       }
     }
-
-    stage('build proxy image') {
+    stage('Push Proxy image to Docker Hub') {
       steps {
-        dir('nginx') {
-          sh 'docker build -t mrrfifa/proxy-image .'
-        }
+        sh 'docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD'
+        sh 'docker push mrrfifa/proxy-image'
       }
     }
-
-    stage('Build ml image') {
-      steps {
-        dir('ml') {
-          sh 'docker build -t mrrfifa/ml-image .'
-        }
-      }
-    }
-
-    stage('Build frontend image') {
-      steps {
-        dir('frontend') {
-          sh 'docker build -t mrrfifa/frontend-image .'
-        }
-      }
-    }
-
-    // stage('Push images to Docker Hub') {
-    //   steps {
-    //     sh 'docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD'
-    //     sh 'docker push mrrfifa/backend-image'
-    //     sh 'docker push mrrfifa/ml-image'
-    //     sh 'docker push mrrfifa/proxy-image'
-    //     sh 'docker push mrrfifa/frontend-image'
-    //   }
-    // }
   }
 }
