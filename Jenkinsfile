@@ -62,7 +62,7 @@ pipeline {
               sh """${scannerHome}/bin/sonar-scanner \
                   -Dsonar.projectKey=PFE-BACKEND-NODE \
                   -Dsonar.sources=. \
-                  -Dsonar.exclusions=**/node_modules/**,**/_tests__/**,**/clones/**,**/test/**,**/uploads/**,*.json,*.log,.*,Dockerfile \
+                  -Dsonar.exclusions=**/node_modules/**,**/clones/**,**/test/**,**/uploads/**,*.json,*.log,.*,Dockerfile \
                   -Dsonar.host.url=http://20.39.234.86:9000 \
                   -Dsonar.login=${SONAR_TOKEN_BACK}"""
             }
@@ -79,7 +79,7 @@ pipeline {
             withSonarQubeEnv('sonar') {
               sh """${scannerHome}/bin/sonar-scanner \
                   -Dsonar.projectKey=PFE-ML-PYTHON \
-                  -Dsonar.sources=**/app.py,**/functions.py \
+                  -Dsonar.sources=**/*.py \
                   -Dsonar.host.url=http://20.39.234.86:9000 \
                   -Dsonar.login=${SONAR_TOKEN_ML}"""
             }
